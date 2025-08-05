@@ -221,11 +221,10 @@ print('Saved file ', fname)
 
 
 if args.compute_error == 'yes':
-    #er1, er2 = compute_error(u[1:nc+1],x, t)              #for error of cell centered solution  
+    er1, er2 = compute_error(u[1:nc+1],x, t)              #for error of cell centered solution  
     er3, er4 = compute_error(u_int[1:nc+2],x_int, t)     #for error of interface solution
     print('h, L1 error norm, L2 error norm= ')
-    #print(h, er1, er2)
-    print(h, er3, er4)
+    print(h, er1, er2, er3, er4)
 if args.plot_freq >0:
     plt.show()
 
