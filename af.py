@@ -61,14 +61,6 @@ for i in range(nc):
 for i in range(nc+1):
     x_int[i] = xmin + i*h      #interface points, nc+1 in number 
 
-
-# u = np.zeros(nc+2)                 # includes ghost cells
-# for i in range(nc):
-#     a = x_int[i]
-#     b = x_int[i+1]
-#     u[i+1], _ = quad(uinit, a, b)  # integrate uinit over the cell to initialize
-#     u[i+1] /= h                    # divide by h to get the average
-
 u = np.zeros(nc+2)     
 u[1:nc+1] = uinit(x)             #initialize solution variable
 u_int = np.zeros(nc+3) 
