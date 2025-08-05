@@ -14,8 +14,11 @@ This repository contains a Python implementation of the **Active Flux Method** f
 # Running the Simulation
 
 You can run the simulation with default parameters using:
+
 $python af.py
+
 If you wish to change the parameters, eg:
+
 $python af.py -cfl 0.02
 
 # EOC
