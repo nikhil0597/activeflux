@@ -5,6 +5,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+import sys
 
 s = "{:<15} {:<25} {:<25} {:<25}  {:<25}"
 
@@ -23,5 +24,11 @@ def convergence_rate(data):
          row = [data[i,0], data[i,1], rate1, data[i,2], rate2]
       print (s.format(*row))
 
-model1 = np.loadtxt("error.txt")
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Usage: python script.py errorfile.txt")
+        sys.exit(1)
+    filename = sys.argv[1]
+    model1 = np.loadtxt(filename)
+    convergence_rate(model1)
 convergence_rate(model1)
