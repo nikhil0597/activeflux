@@ -24,7 +24,7 @@ $python af.py -cfl 0.02
 # EOC
 To compute EOC run as follows
 
-$sh runconverges.sh "40 80 160 320"
+$sh runconvergence.sh "40 80 160 320"
 
 $python plotrate.py error_avg.txt
 
