@@ -11,11 +11,11 @@ from scipy.integrate import quad
 
 # Get arguments
 parser = argparse.ArgumentParser()
-parser.add_argument('-nc', type=int, help='Number of cells', default=200)
-parser.add_argument('-cfl', type=float, help='CFL number', default=0.9)
+parser.add_argument('-nc', type=int, help='Number of cells', default=100)
+parser.add_argument('-cfl', type=float, help='CFL number', default=0.01)
 parser.add_argument('-ic',
                     choices=('gauss', 'triangle', 'smooth'),
-                    help='Initial condition', default='smooth')
+                    help='Initial condition', default='gauss')
 parser.add_argument('-Tf', type=float, help='Final time', default=1.0)
 
 parser.add_argument('-pde', choices=('linear','burger'),help='PDE', default='linear')
