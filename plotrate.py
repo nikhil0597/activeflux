@@ -30,5 +30,5 @@ if __name__ == "__main__":
         sys.exit(1)
     filename = sys.argv[1]
     model1 = np.loadtxt(filename)
-    convergence_rate(model1)
+   #  convergence_rate(model1)
 convergence_rate(model1)

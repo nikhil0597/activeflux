@@ -7,7 +7,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import argparse
 from ic import *
+from scipy import optimize
+from scipy.interpolate import interp1d
 from scipy.integrate import quad
+
 
 # Get arguments
 parser = argparse.ArgumentParser()
@@ -56,18 +59,23 @@ x_int = np.zeros(nc+1)
 h = (xmax - xmin)/nc
   
 for i in range(nc):
-    x[i] = xmin + i*h + 0.5*h  #cell-center points, nc in number
+    x[i] = xmin + i*h + 0.5*h      #cell-center points, nc in number
 
 for i in range(nc+1):
-    x_int[i] = xmin + i*h      #interface points, nc+1 in number 
+    x_int[i] = xmin + i*h          #interface points, nc+1 in number 
 
-u = np.zeros(nc+2)     
-u[1:nc+1] = uinit(x)             #initialize solution variable
-u_int = np.zeros(nc+3) 
-u_int[1:nc+2] = uinit(x_int)     #initialize interface solution values
-res = np.zeros(nc+2)             # residue corresponding to average values
-w = np.zeros(nc+3)               # residue corresponding to interface values
-# s_u = np.zeros(nc+4)
+u = np.zeros(nc+2)                 #cell-average solution variable, includes ghost cells
+for i in range(nc):                #initialize cell-average solution variable 
+    a = x_int[i]
+    b = x_int[i+1]
+    u[i+1], _ = quad(uinit, a, b)  # integrate initial datum over the cells
+    u[i+1] /= h                    # divide by h to get the average
+
+u_int = np.zeros(nc+3)             #interface solution variable, includes ghost cells   
+u_int[1:nc+2] = uinit(x_int)       #initialize interface solution variable
+res = np.zeros(nc+2)               #residue corresponding to average values
+w = np.zeros(nc+3)                 #residue corresponding to interface values
+
 
 t = 0.0 # time
 # plot initial condition
@@ -86,7 +94,7 @@ if args.plot_freq >0:
     plt.grid(True); plt.draw(); plt.pause(0.1)
     wait = input("Press enter to continue ")
 
-#Error computation
+#Error computation for pointwise values
 def compute_error(u1,x1,t):
     error_norm1 = 0.0; error_norm2 = 0.0
     ue = uexact(x1, t , uinit)
@@ -94,6 +102,24 @@ def compute_error(u1,x1,t):
     error_norm1 = h*np.sum(np.abs(u1-ue))
     error_norm2 = np.sqrt(h*np.sum((u1-ue)**2))
     return error_norm1, error_norm2
+
+#Error computation for average values
+def compute_error_avg(u1,x1,t):
+    error_norm1 = 0.0; error_norm2 = 0.0
+    def ex(x): 
+        return uexact(x, t, uinit)    #exact solution at time t
+    z = np.zeros(nc)                  #variable for saving cell-averages of exact solution
+    for i in range(nc):
+        a = x_int[i]
+        b = x_int[i+1]
+        z[i], _ = quad(ex, a, b)      #integrate interpolated exact solution over the cells
+        z[i] /= h                     #divide by h to get the average
+    dom_len = xmax - xmin
+    error_norm1 = h*np.sum(np.abs(u1-z))
+    error_norm2 = np.sqrt(h*np.sum((u1-z)**2))
+    return error_norm1, error_norm2
+
+
 
 
 def update_ghost(u1, v1):
@@ -213,7 +239,7 @@ print('Saved file ', fname)
 
 
 if args.compute_error == 'yes':
-    er1, er2 = compute_error(u[1:nc+1],x, t)              #for error of cell centered solution  
+    er1, er2 = compute_error_avg(u[1:nc+1],x, t)         #for error of cell average solution  
     er3, er4 = compute_error(u_int[1:nc+2],x_int, t)     #for error of interface solution
     print('h, L1 error norm, L2 error norm= ')
     print(h, er1, er2, er3, er4)
