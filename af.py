@@ -17,7 +17,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-nc', type=int, help='Number of cells', default=100)
 parser.add_argument('-cfl', type=float, help='CFL number', default=0.01)
 parser.add_argument('-ic',
-                    choices=('gauss', 'triangle', 'smooth'),
+                    choices=('gauss', 'triangle', 'smooth', 'composite', 'hat'),
                     help='Initial condition', default='gauss')
 parser.add_argument('-Tf', type=float, help='Final time', default=1.0)
 
@@ -52,8 +52,12 @@ if args.ic == 'smooth':
     uinit = smooth
 elif args.ic == 'triangle':
     uinit = triangle
+elif args.ic == 'hat':
+    uinit = hat
 elif args.ic == 'gauss':
-    uinit = gauss   
+    uinit = gauss  
+elif args.ic == 'composite':
+    uinit = composite       
 x   = np.zeros(nc)
 x_int = np.zeros(nc+1)
 h = (xmax - xmin)/nc
@@ -130,7 +134,7 @@ def update_ghost(u1, v1):
 
         # right ghost values
         u1[nc+1] = u1[1]
-        v1[nc+2] = v1[1]
+        v1[nc+2] = v1[2]
     else:
         print('unknown boundary condition')
         exit()

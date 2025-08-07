@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.integrate import quad
 
 # Set intial condition for burger's equation
 
@@ -15,21 +16,27 @@ dflu2 = np.vectorize(dflu2)
 def smooth(x):
     return np.sin(np.pi*x)
     
+import numpy as np
+
 def composite(x):
-    f = np.empty_like(x)
-    for i,y in enumerate(x):
-        if y > -0.8 and y < -0.6:
-            f[i] = np.exp(-np.log(2.0)*(y+0.7)**2/0.0009);
-        elif y > -0.4 and y < -0.2:
-            f[i] = 1.0;
-        elif y > 0.0 and y < 0.2:
-            f[i] = 1.0 - abs(10.0*(y-0.1));
-        elif y > 0.4 and y < 0.6:
-            f[i] = np.sqrt(1.0 - 100.0*(y-0.5)**2);
+    def _f(y):
+        if -0.8 < y < -0.6:
+            return np.exp(-np.log(2.0)*(y+0.7)**2 / 0.0009)
+        elif -0.4 < y < -0.2:
+            return 1.0
+        elif 0.0 < y < 0.2:
+            return 1.0 - abs(10.0*(y - 0.1))
+        elif 0.4 < y < 0.6:
+            return np.sqrt(1.0 - 100.0*(y - 0.5)**2)
         else:
-            f[i] = 0.0;
-    return f
-# Chiarello 2020 paer
+            return 0.0
+
+    if np.isscalar(x):
+        return _f(x)
+    else:
+        x = np.asarray(x)
+        return np.array([_f(xi) for xi in x])
+
 def smooth_c(x):  
     return 0.5+(0.4*np.sin(np.pi*x))
 
